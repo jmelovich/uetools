@@ -40,19 +40,19 @@ export const generateCompileCommands = (): Promise<boolean> => {
             if (os === "win32") {
                 buildOsType = "Win64";
                 shellCommand = new vscode.ShellExecution(
-                    `"${unrealBuildToolPath}" -mode=GenerateClangDatabase -project=${path.join(projectFolder, project.Modules[0].Name)}.uproject ${project.Modules[0].Name}Editor ${buildOsType} Development`,
+                    `"${unrealBuildToolPath}" -mode=GenerateClangDatabase -OutputDir="${projectFolder}" -project=${path.join(projectFolder, project.Modules[0].Name)}.uproject ${project.Modules[0].Name}Editor ${buildOsType} Development`,
                     { cwd: unrealEngineInstallation, executable: runtimePath}
                 );
             } else if (os === "darwin") {
                 buildOsType = "Mac";
                 shellCommand = new vscode.ShellExecution(
-                    `${runtimePath.split(" ").join("\\ ")} ${unrealBuildToolPath.split(" ").join("\\ ")} -mode=GenerateClangDatabase -project=${path.join(projectFolder, project.Modules[0].Name).split(" ").join("\\ ")}.uproject ${project.Modules[0].Name}Editor ${buildOsType} Development`,
+                    `${runtimePath.split(" ").join("\\ ")} ${unrealBuildToolPath.split(" ").join("\\ ")} -mode=GenerateClangDatabase -OutputDir="${projectFolder.split(" ").join("\\ ")}" -project=${path.join(projectFolder, project.Modules[0].Name).split(" ").join("\\ ")}.uproject ${project.Modules[0].Name}Editor ${buildOsType} Development`,
                     { cwd: unrealEngineInstallation }
                 );
             } else if (os === "linux") {
                 buildOsType = "Linux";
                 shellCommand = new vscode.ShellExecution(
-                    `${runtimePath.split(" ").join("\\ ")} ${unrealBuildToolPath.split(" ").join("\\ ")} -mode=GenerateClangDatabase -project=${path.join(projectFolder, project.Modules[0].Name).split(" ").join("\\ ")}.uproject ${project.Modules[0].Name}Editor ${buildOsType} Development`,
+                    `${runtimePath.split(" ").join("\\ ")} ${unrealBuildToolPath.split(" ").join("\\ ")} -mode=GenerateClangDatabase -OutputDir="${projectFolder.split(" ").join("\\ ")}" -project=${path.join(projectFolder, project.Modules[0].Name).split(" ").join("\\ ")}.uproject ${project.Modules[0].Name}Editor ${buildOsType} Development`,
                     { cwd: unrealEngineInstallation }
                 );
             }
@@ -78,14 +78,13 @@ export const generateCompileCommands = (): Promise<boolean> => {
             // Wait for task to finish
             vscode.tasks.onDidEndTask((e) => {
                 if (e.execution.task === execution.task) {
-                    // check if compile_commands.json was generated on engine installation folder and move it to project folder
-                    const newCompileCommandsFile = path.join(unrealEngineInstallation, 'compile_commands.json');
-                    if (!fs.existsSync(newCompileCommandsFile)) {
-                        vscode.window.showErrorMessage(`Could not generate compile_commands.json for ${project.Modules[0].Name}. Intelisense may not work for clangd.`);
+                    // Check if compile_commands.json was generated in the project folder
+                    if (!fs.existsSync(compileCommandsFile)) {
+                        vscode.window.showErrorMessage(`Could not generate compile_commands.json for ${project.Modules[0].Name}. Intellisense may not work for clangd.`);
                         console.log('End: generateCompileCommands');
+                        resolve(false);
                         return;
                     }
-                    fs.renameSync(newCompileCommandsFile, compileCommandsFile);
 
                     // set compile_commands.json relative dir in clangd arguments in workspace settings
                     const clangd = vscode.workspace.getConfiguration('clangd', vscode.workspace.workspaceFolders![0]).get('arguments') as string[];
@@ -97,6 +96,8 @@ export const generateCompileCommands = (): Promise<boolean> => {
                     }
                     vscode.workspace.getConfiguration('clangd', vscode.workspace.workspaceFolders![0]).update('arguments', clangd, vscode.ConfigurationTarget.Workspace, true);
 
+                    vscode.window.showInformationMessage(`Compile commands generated for ${project.Modules[0].Name}`);
+                    console.log('End: generateCompileCommands');
                     resolve(true);
                 }
             });

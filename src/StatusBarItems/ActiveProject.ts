@@ -16,7 +16,7 @@ export class ActiveProjectStatusBarItem {
 
     // 
     public update(project: UnrealEngineProject) {
-        this._statusBarItem.text = `${project.Modules[0].Name} (UE v${project.EngineAssociation})`;
+        this._statusBarItem.text = `${project.Modules[0].Name} (${project.EngineAssociation})`;
         this._statusBarItem.show();
     }
 

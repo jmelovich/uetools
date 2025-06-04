@@ -2,12 +2,12 @@
 	"name": "uetools",
 	"displayName": "Unreal Engine Tools",
 	"description": "Unreal Engine toolset to help developing projects using Visual Studio Code.",
-	"publisher": "tiagodsp",
+	"publisher": "jmelovich",
 	"icon": "res/images/uetoolslogo128.png",
 	"repository": {
-		"url": "https://github.com/tiagodsp/uetools"
+		"url": "https://github.com/jmelovich/uetools"
 	},
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"engines": {
 		"vscode": "^1.64.0"
 	},
@@ -31,11 +31,31 @@
 		],
 		"configuration": [
 			{
-				"title": "Uneral Engine Tools",
+				"title": "Unreal Engine Tools",
 				"properties": {
 					"uetools.unrealEngineInstallationSearchPath": {
 						"type": "string",
 						"description": "Path to search for Unreal Engine installations",
+						"default": ""
+					},
+					"uetools.unrealEngineVersionOverride": {
+						"type": "string",
+						"description": "Override the Unreal Engine version",
+						"default": ""
+					},
+					"uetools.unrealBuildToolPathOverride": {
+						"type": "string",
+						"description": "Override the Unreal Engine Build Tool path (UnrealBuildTool.dll for UE5, UnrealBuildTool.exe for UE4). This path is relative to the Unreal Engine installation path. The default value for UE5/Windows is 'Engine\\Binaries\\DotNET\\UnrealBuildTool\\UnrealBuildTool.dll'",
+						"default": ""
+					},
+					"uetools.unrealEditorPathOverride": {
+						"type": "string",
+						"description": "Override the Unreal Engine Editor path (UnrealEditor.exe for UE5, UE4Editor.exe for UE4). This path is relative to the Unreal Engine installation path. The default value for UE5/Windows is 'Engine\\Binaries\\Win64\\UnrealEditor.exe'",
+						"default": ""
+					},
+					"uetools.unrealRuntimePathOverride": {
+						"type": "string",
+						"description": "Override the Unreal Engine Runtime path (dotnet.exe for Windows, mono for Linux and MacOS). This path is relative to the Unreal Engine installation path. The default value for UE5/Windows is 'Engine\\Binaries\\ThirdParty\\DotNet\\Windows\\dotnet.exe'",
 						"default": ""
 					}
 				}
